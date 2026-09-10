@@ -53,7 +53,7 @@ static OScDev_Error TimeTagger_GetModelName(const char **name) {
 }
 
 static OScDev_Error TimeTagger_EnumerateInstances(OScDev_PtrArray **devices) {
-    std::vector<std::string> serials = scanTimeTagger(false);
+    std::vector<std::string> serials = scanTimeTagger();
 
     if (serials.empty()) {
         // scanTimeTagger() found nothing to report -- not necessarily an

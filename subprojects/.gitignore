@@ -1,14 +1,7 @@
-/packagecache/
+*
+!/.gitignore
 
-# Subprojects with version numbers (downloaded via wrap)
-/*-*/
-
-# Other subprojects
-/OpenScanLib/
-/libtcspc/
-
-# List of our .wrap files (because we do want to ignore any transitive
-# dependency wraps, e.g. libtcspc's own test dependencies)
-/*.wrap
+# Do not ignore _our_ .wrap files (while ignoring those fetched for transitive
+# dependencies):
 !/OpenScanLib.wrap
 !/libtcspc.wrap
