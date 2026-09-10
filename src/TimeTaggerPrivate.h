@@ -5,8 +5,7 @@
 #include <TimeTagger.h>
 #include <OpenScanDeviceLib.h>
 
-class TimeTagger_PrivateData {
-public:
+struct TimeTagger_PrivateData {
     std::string serial;
     TimeTaggerBase *tagger = nullptr;
     std::unique_ptr<IteratorBase> pipeline = nullptr;
@@ -28,8 +27,8 @@ public:
     std::string fileNamePrefix = "OpenScan-Swabian";
 };
 
-static inline class TimeTagger_PrivateData *GetData(OScDev_Device *device) {
-    return static_cast<class TimeTagger_PrivateData *>(OScDev_Device_GetImplData(device));
+inline TimeTagger_PrivateData *GetData(OScDev_Device *device) {
+    return static_cast<TimeTagger_PrivateData *>(OScDev_Device_GetImplData(device));
 }
 
 OScDev_Error TimeTagger_MakeSettings(OScDev_Device *device, OScDev_PtrArray **settings);
