@@ -4,4 +4,5 @@
 # Do not ignore _our_ .wrap files (while ignoring those fetched for transitive
 # dependencies):
 !/OpenScanLib.wrap
+!/catch2.wrap
 !/libtcspc.wrap
