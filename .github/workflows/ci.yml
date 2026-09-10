@@ -13,20 +13,40 @@ on:
 jobs:
   test:
     runs-on: windows-latest
+
+    env:
+      CXX: ccache cl
+
     steps:
+      - name: Remove Strawberry Perl from Path
+        # Otherwise we end up using its bundled ccache.
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $clean = ($env:PATH -split ';' | Where-Object { $_ -notlike 'C:\Strawberry\*' }) -join ';'
+          "PATH=$clean" >> $env:GITHUB_ENV
+
       - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+
       - name: Install Meson and Ninja
         run: python -m pip install --upgrade pip meson ninja
 
       - name: Set up MSVC developer environment
         uses: compnerd/gha-setup-vsdevenv@452f99effa381b81c025ccfbdccaca509bff1b29 # v7
 
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2.24
+
+      - name: Enable ccache depend mode
+        if: runner.os == 'Windows'
+        run: ccache --set-config=depend_mode=true
+
       - name: Configure
-        run: meson setup builddir -Dsimulate=true
+        run: meson setup builddir --buildtype release -Dsimulate=true
 
       - name: Build
         run: meson compile -C builddir
