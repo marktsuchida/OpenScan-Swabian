@@ -5,10 +5,10 @@
 #include <cstring>
 #include <limits>
 
-static inline TimeTagger_PrivateData *
+static TimeTagger_PrivateData *
 GetSettingDeviceData(OScDev_Setting *setting) {
-    return (TimeTagger_PrivateData *)OScDev_Device_GetImplData(
-        (OScDev_Device *)OScDev_Setting_GetImplData(setting));
+    return static_cast<TimeTagger_PrivateData *>(OScDev_Device_GetImplData(
+        (OScDev_Device *)OScDev_Setting_GetImplData(setting)));
 }
 
 template <int32_t TimeTagger_PrivateData::*Member>
