@@ -42,11 +42,11 @@ public:
 
 class SyncDelaySetting {
     static OScDev_Error Get(OScDev_Setting *setting, int32_t *value) {
-        *value = GetSettingDeviceData(setting)->syncDelay;
+        *value = GetSettingDeviceData(setting)->syncDelay_ps;
         return OScDev_OK;
     }
     static OScDev_Error Set(OScDev_Setting *setting, int32_t value) {
-        GetSettingDeviceData(setting)->syncDelay = value;
+        GetSettingDeviceData(setting)->syncDelay_ps = value;
         return OScDev_OK;
     }
 
@@ -59,11 +59,11 @@ public:
 
 class LineDelaySetting {
     static OScDev_Error Get(OScDev_Setting *setting, int32_t *value) {
-        *value = GetSettingDeviceData(setting)->lineDelay;
+        *value = GetSettingDeviceData(setting)->lineDelay_ps;
         return OScDev_OK;
     }
     static OScDev_Error Set(OScDev_Setting *setting, int32_t value) {
-        GetSettingDeviceData(setting)->lineDelay = value;
+        GetSettingDeviceData(setting)->lineDelay_ps = value;
         return OScDev_OK;
     }
     static OScDev_Error GetNumericConstraintType(OScDev_Setting *, OScDev_ValueConstraint *constraintType) {
@@ -88,11 +88,11 @@ public:
 
 class MaxPhotonPulseWidthSetting {
     static OScDev_Error Get(OScDev_Setting *setting, int32_t *value) {
-        *value = GetSettingDeviceData(setting)->maxPhotonPulseWidth;
+        *value = GetSettingDeviceData(setting)->maxPhotonPulseWidth_ps;
         return OScDev_OK;
     }
     static OScDev_Error Set(OScDev_Setting *setting, int32_t value) {
-        GetSettingDeviceData(setting)->maxPhotonPulseWidth = value;
+        GetSettingDeviceData(setting)->maxPhotonPulseWidth_ps = value;
         return OScDev_OK;
     }
     static OScDev_Error GetNumericConstraintType(OScDev_Setting *, OScDev_ValueConstraint *constraintType) {
@@ -116,11 +116,11 @@ public:
 
 class MaxDiffTimeSetting {
     static OScDev_Error Get(OScDev_Setting *setting, int32_t *value) {
-        *value = GetSettingDeviceData(setting)->maxDiffTime;
+        *value = GetSettingDeviceData(setting)->maxDiffTime_ps;
         return OScDev_OK;
     }
     static OScDev_Error Set(OScDev_Setting *setting, int32_t value) {
-        GetSettingDeviceData(setting)->maxDiffTime = value;
+        GetSettingDeviceData(setting)->maxDiffTime_ps = value;
         return OScDev_OK;
     }
     static OScDev_Error GetNumericConstraintType(OScDev_Setting *, OScDev_ValueConstraint *constraintType) {
