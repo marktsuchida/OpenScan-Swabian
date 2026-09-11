@@ -56,20 +56,10 @@ static OScDev_Error TimeTagger_EnumerateInstances(OScDev_PtrArray **devices) {
     std::vector<std::string> serials = scanTimeTagger();
 
     if (serials.empty()) {
-        // scanTimeTagger() found nothing to report -- not necessarily an
-        // error (OpenScanLib calls EnumerateInstances for every installed
-        // module at startup, whether or not this one's hardware is
-        // present), but silently returning zero devices here is
-        // indistinguishable from a real problem, so log *why* nothing
-        // showed up. The two most common causes: no Time Tagger connected,
-        // or the connected one's license doesn't permit use.
-        //
-        // createTimeTagger() often throws with a more specific,
-        // vendor-provided reason than scanTimeTagger() gives us -- try it
-        // purely to capture that detail for the log; we still report zero
-        // devices below either way, matching what scanTimeTagger() found.
         std::string detail;
         try {
+            // The "" arg to createTimeTagger() means "first device found";
+            // this will throw with a specific error message.
             freeTimeTagger(createTimeTagger(""));
         } catch (std::exception const &e) {
             detail = e.what();
@@ -101,7 +91,6 @@ static OScDev_Error TimeTagger_EnumerateInstances(OScDev_PtrArray **devices) {
         OScDev_PtrArray_Append(*devices, device);
     }
 
-    // TODO
     return OScDev_OK;
 }
 
@@ -141,6 +130,11 @@ static OScDev_Error TimeTagger_Close(OScDev_Device *device) {
     return OScDev_OK;
 }
 
+static OScDev_Error TimeTagger_HasClock(OScDev_Device *, bool *hasClock) {
+    *hasClock = false;
+    return OScDev_OK;
+}
+
 static OScDev_Error TimeTagger_HasScanner(OScDev_Device *, bool *hasScanner) {
     *hasScanner = false;
     return OScDev_OK;
@@ -151,27 +145,14 @@ static OScDev_Error TimeTagger_HasDetector(OScDev_Device *, bool *hasDetector) {
     return OScDev_OK;
 }
 
-static OScDev_Error TimeTagger_HasClock(OScDev_Device *, bool *hasClock) {
-    *hasClock = false;
-    return OScDev_OK;
-}
-
-
-
 static OScDev_Error TimeTagger_GetPixelRates(OScDev_Device *, OScDev_NumRange **pixelRatesHz) {
-    // NOTE these values are placeholders.
-    // The lower bound of the range was copied from similar device modules.
-    // The upper bound was computed from the largest minimum pulse width
-    // across the three Swabian Time Tagger models (1 ns for the Time Tagger 20
-    // vs. 500 ps / 350 ps on the others). Assumes a marker pulse's high
-    // and low states each need to hold for at least the minimum pulse
-    // width, so max rate = 1 / (2 * min_pulse_width).
-    *pixelRatesHz = OScDev_NumRange_CreateContinuous(1e3, 5e8);
+    // These values are arbitrary but should cover most reasonable acquisitions.
+    *pixelRatesHz = OScDev_NumRange_CreateContinuous(1e3, 1e7);
     return OScDev_OK;
 }
 
 static OScDev_Error TimeTagger_GetNumberOfChannels(OScDev_Device *, uint32_t *numChannels) {
-    // could probably be increased later.
+    // TODO Support multiple channels
     *numChannels = 1;
     return OScDev_OK;
 }
@@ -199,21 +180,11 @@ static OScDev_Error Arm(OScDev_Device *device, OScDev_Acquisition *acq) {
             "Unsupported operation (only external clock source supported)"));
     }
 
-    auto ctx = tcspc::context::create();
-
     // Tear down any still-running pipeline from a previous Arm() BEFORE
-    // constructing the new one. `pipeline = std::make_unique<...>(...)`
-    // would construct (and start the threads of) the new EventPipeline
-    // first, only destroying -- and thus stopping -- the old one as part
-    // of the assignment; that leaves two pipelines registered on the same
-    // channels and running concurrently for as long as the old one takes
-    // to drain and join, each competing with the other for CPU. Resetting
-    // first ensures only one pipeline is ever alive at a time.
-    auto& pipeline = GetData(device)->pipeline;
-    if (pipeline) {
-        pipeline.reset();
-    }
+    // constructing the new one.
+    GetData(device)->pipeline.reset();
 
+    auto ctx = tcspc::context::create();
     try {
         GetData(device)->pipeline = std::make_unique<EventPipeline>(device, acq, ctx);
     } catch (const std::runtime_error &e) {
