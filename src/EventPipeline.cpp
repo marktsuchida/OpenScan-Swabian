@@ -519,9 +519,6 @@ bool EventPipeline::next_impl(std::vector<Tag> &incoming_tags, timestamp_t begin
     return false;
 }
 
-void EventPipeline::clear_impl() {
-}
-
 void EventPipeline::on_start() {
 }
 
