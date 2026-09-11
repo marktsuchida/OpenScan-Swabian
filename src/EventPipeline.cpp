@@ -467,7 +467,8 @@ make_pipeline(TimeTagger_PrivateData *data, OScDev_Acquisition *acq, std::shared
 }
 } // namespace
 
-EventPipeline::EventPipeline(OScDev_Device *device, OScDev_Acquisition *acq, std::shared_ptr<tcspc::context> const &ctx) : IteratorBase(GetData(device)->tagger),
+EventPipeline::EventPipeline(OScDev_Device *device, OScDev_Acquisition *acq, std::shared_ptr<tcspc::context> const &ctx) :
+    IteratorBase(GetData(device)->tagger.get()),
     device_(device),
     pipeline_(make_pipeline(GetData(device), acq, ctx)),
     accessor_(ctx->access<tcspc::buffer_accessor>("tag_buffer"))

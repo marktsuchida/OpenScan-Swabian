@@ -7,7 +7,8 @@
 
 struct TimeTagger_PrivateData {
     std::string serial;
-    TimeTaggerBase *tagger = nullptr;
+    std::unique_ptr<TimeTaggerBase, void(*)(TimeTaggerBase *)> tagger =
+        {nullptr, nullptr};
     std::unique_ptr<IteratorBase> pipeline = nullptr;
 
     int32_t lineClockChannel = 1;
